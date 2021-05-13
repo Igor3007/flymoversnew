@@ -51,13 +51,24 @@ testWebP(function (support) {
 });
 //=================================================================================================
 
-// WINDOW RESIZE EVENTS ===========================================================================
+// WINDOW EVENTS ==================================================================================
+$(window).on('load', function() {
+	testimonialsContentShowmore();
+	setActiveTestimonialsContentOnLoad();
+});
+
+var winWidthOnLoad = $(window).outerWidth();
 var winWidth = $(window).outerWidth();
 
 $(window).on('resize', function () {
 	winWidth = $(this).outerWidth();
 
 	blockTransfer(winWidth);
+
+	if (winWidthOnLoad !== winWidth) {
+		testimonialsContentShowmore_reset();
+		testimonialsContentShowmore();
+	}
 });
 //=================================================================================================
 
@@ -88,10 +99,6 @@ function blockTransfer(winWidth) {
 	if (winWidth < 577) {
 		headerCallbackWrapper.appendTo(headerMenuBTNs);
 	}
-
-	if (winWidth <= 480) {
-		headerPhone.prependTo(headerMenuMobile);
-	}
 }
 blockTransfer(winWidth);
 //=================================================================================================
@@ -100,6 +107,7 @@ blockTransfer(winWidth);
 $('.header-burger').on('click', function () {
 	$(this).toggleClass('active');
 	$('.header-menu__mobile').toggleClass('active');
+	$('body').toggleClass('lock');
 });
 //=================================================================================================
 
@@ -114,7 +122,6 @@ $('.start-step:last').addClass('start-step--last')
 
 // создаем буллиты
 var dotsParent = $('.start-steps__dots');
-
 for (var i = 0; i < steps.length; i++) {
 	var stepID = i + 1;
 
@@ -245,14 +252,12 @@ $('.form-select').each(function () {
 	// сворачиваем фейковый список
 	selectList.slideUp(0);
 
-	// разворачиваем фейковый список при клике на его родителя
 	selectFake.on('click', function () {
 		if (!$(this).hasClass('on')) {
 			$(this).addClass('on');
 			selectList.slideDown(duration);
 
 			selectItem.off('mouseup', function () { });
-
 			selectItem.on('mouseup', function () {
 				var chooseItem = $(this).data('value');
 
@@ -295,84 +300,28 @@ $('.datepicker-here').datepicker({
 });
 //=================================================================================================
 
-// FORMS ==========================================================================================
-$('form').on('submit', function (e) {
-	e.preventDefault();
-	var form = $(this);
+// WHY US TABS ================================================================================
+var whyusNavBTN = $('.whyus-nav__btn');
 
-	var error = formValidate(form);
+whyusNavBTN.on('click', function () {
+	if (!$(this).hasClass('active')) {
+		var currentID = $(this).attr('data-whyus-id');
+		var parent = $(this).parents('.whyus');
 
-	if (error === 0) {
+		parent.find('.whyus-content__item').slideUp(300);
+		parent.find('.whyus-content__item[data-whyus-id=' + currentID + ']').slideDown(300);
 
-		// скрипт отправки формы, если все норм
-
-	} else {
-
-		// если форма заполнена не корректно
-
+		whyusNavBTN.removeClass('active');
+		$(this).addClass('active');
 	}
 });
-
-function formValidate(form) {
-	var error = 0;
-	var formRequiredFields = form.find('.req');
-
-	formRequiredFields.each(function () {
-
-
-		if ($(this).attr('type') == 'email') {
-			if (emailValidation($(this))) {
-				$(this).parent().addClass('error');
-
-				error++;
-			} else {
-				$(this).parent().removeClass('error');
-				$(this).parent().addClass('confirmed');
-			}
-
-		} else if ($(this).val() === '') {
-			$(this).parent().addClass('error');
-
-			error++;
-		} else {
-			$(this).parent().removeClass('error');
-			$(this).parent().addClass('confirmed');
-		}
-	});
-
-	return error;
-}
-
-// E-MAIL validation
-function emailValidation(input) {
-	return !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,8})+$/.test(input.val());
-}
-//=============================================================================================
-
-// WHY US TABS ================================================================================
-if ($('.whyus').length) {
-	var whyusNavBTN = $('.whyus-nav__btn');
-
-	whyusNavBTN.on('click', function () {
-		if (!$(this).hasClass('active')) {
-			var currentID = $(this).attr('data-whyus-id');
-			var parent = $(this).parents('.whyus');
-
-			parent.find('.whyus-content__item').slideUp(300);
-			parent.find('.whyus-content__item[data-whyus-id=' + currentID + ']').slideDown(300);
-
-			whyusNavBTN.removeClass('active');
-			$(this).addClass('active');
-		}
-	});
-}
 //=============================================================================================
 
 // STAR RATING ================================================================================
 var starRating = $('.star-rating');
 
-if(starRating.length) {
-	starRating.each(function(){
+if (starRating.length) {
+	starRating.each(function () {
 		var currentValue = $(this).find('.star-rating__value').val();
 		var currentValuePercent = currentValue / 0.05;
 
@@ -382,46 +331,6 @@ if(starRating.length) {
 //=============================================================================================
 
 // OWL SLIDER =================================================================================
-// WHO SLIDER
-var whoSlider = $('.who-slider');
-
-if (whoSlider.length) {
-	whoSlider.owlCarousel({
-		lazyLoad: false,
-		dots: false,
-		nav: true,
-		navContainer: false,
-		items: 3,
-		margin: 30,
-		stagePadding: 0,
-		center: false,
-		startPosition: 0,
-		loop: true,
-		smartSpeed: 300,
-		autoplay: true,
-		autoplayTimeout: 5000,
-		autoplayHoverPause: false,
-		slideTransition: 'linear',
-		responsive: {
-			0: {
-				//items:1
-			},
-			600: {
-				//items:3
-			},
-			1000: {
-				//items:5
-			}
-		}
-	});
-}
-
-
-
-// =============================================
-// TEAM SLIDER
-var teamSlider = $('.team-slider');
-
 var arrowLeftSVG = `
 	<svg width="14" height="8" viewBox="0 0 14 8" fill="none">
 		<path d="M0.246592 3.64645C0.0513305 3.84171 0.0513306 4.15829 0.246593 4.35355L3.42857 7.53553C3.62384 7.7308 3.94042 7.7308 4.13568 7.53553C4.33094 7.34027 4.33094 7.02369 4.13568 6.82843L1.30725 4L4.13568 1.17157C4.33094 0.976311 4.33094 0.659729 4.13568 0.464467C3.94042 0.269204 3.62384 0.269204 3.42857 0.464467L0.246592 3.64645ZM13.4001 3.5L0.600146 3.5L0.600146 4.5L13.4001 4.5L13.4001 3.5Z" fill="currentColor"/>
@@ -434,6 +343,50 @@ var arrowRightSVG = `
 	</svg>
 `;
 
+// WHO SLIDER
+var whoSlider = $('.who-slider');
+
+if (whoSlider.length) {
+	whoSlider.owlCarousel({
+		lazyLoad: false,
+		dots: false,
+		nav: true,
+		navContainer: false,
+		navText: [arrowLeftSVG, arrowRightSVG],
+		margin: 30,
+		stagePadding: 0,
+		center: false,
+		startPosition: 0,
+		loop: true,
+		smartSpeed: 300,
+		autoplay: true,
+		autoplayTimeout: 8000,
+		autoplayHoverPause: false,
+		slideTransition: 'ease',
+		responsive: {
+			0: {
+				items: 1
+			},
+			480: {
+				items: 2
+			},
+			768: {
+				items: 1
+			},
+			993: {
+				items: 2
+			},
+			1200: {
+				items: 3
+			}
+		}
+	});
+}
+
+// =============================================
+// TEAM SLIDER
+var teamSlider = $('.team-slider');
+
 if (teamSlider.length) {
 	teamSlider.owlCarousel({
 		lazyLoad: false,
@@ -441,7 +394,6 @@ if (teamSlider.length) {
 		nav: true,
 		navContainer: false,
 		navText: [arrowLeftSVG, arrowRightSVG],
-		items: 5,
 		margin: 30,
 		stagePadding: 0,
 		center: true,
@@ -451,17 +403,66 @@ if (teamSlider.length) {
 		autoplay: true,
 		autoplayTimeout: 8000,
 		autoplayHoverPause: false,
-		slideTransition: 'linear',
+		slideTransition: 'ease',
 		responsive: {
 			0: {
-				//items:1
+				items: 1
 			},
-			600: {
-				//items:3
+			576: {
+				items: 2
 			},
-			1000: {
-				//items:5
-			}
+			768: {
+				items: 3
+			},
+			993: {
+				items: 4
+			},
+			1200: {
+				items: 5
+			},
+		}
+	});
+}
+
+// =============================================
+// REVIEWS SLIDER
+var reviewsSlider = $('.reviews-slider');
+
+if (reviewsSlider.length) {
+	reviewsSlider.owlCarousel({
+		lazyLoad: false,
+		dots: false,
+		nav: true,
+		navContainer: false,
+		navText: [arrowLeftSVG, arrowRightSVG],
+		margin: 30,
+		stagePadding: 0,
+		center: false,
+		startPosition: 0,
+		smartSpeed: 300,
+		autoplay: false,
+		slideTransition: 'ease',
+		responsive: {
+			0: {
+				loop: false,
+				items: 1
+			},
+			576: {
+				loop: true,
+				items: 2
+			},
+			768: {
+				loop: false,
+				items: 2
+			},
+			993: {
+				loop: false,
+				items: 2
+			},
+			1200: {
+				loop: false,
+				items: 3
+			},
 		}
 	});
 }
@@ -474,7 +475,6 @@ if ($('.baguettebox-gallery').length) {
 //=============================================================================================
 
 // YOUTUBE VIDEO ==============================================================================
-// находим все блоки с классом видео
 function findVideos() {
 	var videos = document.querySelectorAll('.video');
 
@@ -482,6 +482,7 @@ function findVideos() {
 		setupVideo(videos[i]);
 	}
 }
+findVideos();
 
 // настройки видео
 function setupVideo(video) {
@@ -525,12 +526,160 @@ function createIframe(id) {
 	return iframe;
 }
 
-// создаем ссылку на определенное видео для iFrame
+// создаем URL видео для iFrame
 function generateURL(id) {
 	var query = '?rel=0&showinfo=0&autoplay=1';
 
 	return 'https://www.youtube.com/embed/' + id + query;
 }
-
-findVideos();
 //=================================================================================================
+
+// TESTIMONIALS TABS ==============================================================================
+var testimonialsNavBtn = $('.testimonials-nav__btn');
+
+testimonialsNavBtn.on('click', function () {
+	if (!$(this).hasClass('active')) {
+		var parent = $(this).parents('.testimonials');
+		var currentID = $(this).attr('data-testimonials-id');
+
+		testimonialsContentShowmore_reset();
+
+		testimonialsNavBtn.removeClass('active');
+		$(this).addClass('active');
+
+		if (currentID === 'all') {
+			parent.find('.testimonials-item').slideUp(300);
+
+			setTimeout(function () {
+				parent.find('.testimonials-item').slideDown(300);
+			}, 350);
+		} else {
+			parent.find('.testimonials-item').slideUp(300);
+
+			setTimeout(function () {
+				parent.find('.testimonials-item[data-testimonials-id="' + currentID + '"]').slideDown(300);
+			}, 350);
+		}
+	}
+});
+
+// проверяем какая кнопка имеет класс active и отображаем соответствующий контент
+function setActiveTestimonialsContentOnLoad() {
+	var currentID = $('.testimonials-nav__btn.active').attr('data-testimonials-id');
+
+	if(currentID == 'all') {
+		$('.testimonials-item').slideUp(0);
+		$('.testimonials-item').slideDown(0);
+	} else {
+		$('.testimonials-item').slideUp(0);
+		$('.testimonials-item[data-testimonials-id="' + currentID + '"]').slideDown(0);
+	}
+}
+//=================================================================================================
+
+// TESTIMONIALS COMMENTS SHOWMORE BTN =============================================================
+function testimonialsContentShowmore() {
+	var testimonialsItemContentInner = $('.testimonials-item__content-inner');
+	var testimonialsItemContentInner_height = testimonialsItemContentInner.outerHeight();
+	var testimonialsItemContentInner_contentHeight = testimonialsItemContentInner.height();
+	var testimonialsItemContentInner_paddings = (testimonialsItemContentInner_height - testimonialsItemContentInner_contentHeight);
+	var testimonialsItemShowmoreBtn = $('.testimonials-item__comment-showmore-btn');
+
+	testimonialsItemContentInner.each(function () {
+		var currentCommentHeight = $(this).find('.testimonials-item__comment').outerHeight();
+
+		if (testimonialsItemContentInner_contentHeight < currentCommentHeight) {
+			$(this).addClass('showmore');
+		} else {
+			$(this).removeClass('showmore');
+		}
+	});
+
+	testimonialsItemShowmoreBtn.off('click');
+	testimonialsItemShowmoreBtn.on('click', function () {
+		var currentWrapper = $(this).parents('.showmore');
+		var currentCommentHeight = currentWrapper.find('.testimonials-item__comment').outerHeight();
+	
+		$(this).toggleClass('active');
+	
+		if ($(this).hasClass('active')) {
+			currentWrapper.css('height', currentCommentHeight + 50 + testimonialsItemContentInner_paddings + 'px');	// 50 высота блока с кнопкой .testimonials-item__comment-showmore
+			$(this).text('Hide');
+		} else {
+			currentWrapper.css('height', testimonialsItemContentInner_height + 'px');
+			$(this).text('Show completely');
+		}
+	});
+}
+
+// закрываем все showmore (длинные) комментарии
+function testimonialsContentShowmore_reset() {
+	$('.testimonials-item__content-inner').removeAttr('style');
+	$('.testimonials-item__comment-showmore-btn').removeClass('active').text('Show completely');
+}
+//=================================================================================================
+
+// FORMS ==========================================================================================
+$('form').on('submit', function (e) {
+	e.preventDefault();
+	var form = $(this);
+
+	var error = formValidate(form);
+
+	if (error === 0) {
+
+		// скрипт отправки формы, если все норм
+
+	} else {
+
+		// если форма заполнена не корректно
+
+	}
+});
+
+function formValidate(form) {
+	var error = 0;
+	var formRequiredFields = form.find('.req');
+
+	formRequiredFields.each(function () {
+		if ($(this).attr('type') == 'email') {
+
+			if (emailValidation($(this))) {
+				$(this).parent().addClass('error');
+				error++;
+			} else {
+				$(this).parent().removeClass('error');
+				$(this).parent().addClass('confirmed');
+			}
+
+		} else if ($(this).val() === '') {
+
+			$(this).parent().addClass('error');
+			error++;
+
+		} else {
+
+			$(this).parent().removeClass('error');
+			$(this).parent().addClass('confirmed');
+
+		}
+
+		//CHECKBOX
+		if ($(this).attr('type') == 'checkbox') {
+			if ($(this).is(':checked')) {
+				$(this).parent().removeClass('error');
+			} else {
+				$(this).parent().addClass('error');
+				error++;
+			}
+		}
+	});
+
+	return error;
+}
+
+// E-MAIL validation
+function emailValidation(input) {
+	return !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,8})+$/.test(input.val());
+}
+//=============================================================================================
