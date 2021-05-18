@@ -51,13 +51,24 @@ testWebP(function (support) {
 });
 //=================================================================================================
 
-// WINDOW RESIZE EVENTS ===========================================================================
+// WINDOW EVENTS ==================================================================================
+$(window).on('load', function() {
+	testimonialsContentShowmore();
+	setActiveTestimonialsContentOnLoad();
+});
+
+var winWidthOnLoad = $(window).outerWidth();
 var winWidth = $(window).outerWidth();
 
 $(window).on('resize', function () {
 	winWidth = $(this).outerWidth();
 
 	blockTransfer(winWidth);
+
+	if (winWidthOnLoad !== winWidth) {
+		testimonialsContentShowmore_reset();
+		testimonialsContentShowmore();
+	}
 });
 //=================================================================================================
 
@@ -87,10 +98,6 @@ function blockTransfer(winWidth) {
 
 	if (winWidth < 577) {
 		headerCallbackWrapper.appendTo(headerMenuBTNs);
-	}
-
-	if (winWidth <= 480) {
-		headerPhone.prependTo(headerMenuMobile);
 	}
 }
 blockTransfer(winWidth);
@@ -355,7 +362,7 @@ if (whoSlider.length) {
 		autoplay: true,
 		autoplayTimeout: 8000,
 		autoplayHoverPause: false,
-		slideTransition: 'linear',
+		slideTransition: 'ease',
 		responsive: {
 			0: {
 				items: 1
@@ -396,7 +403,7 @@ if (teamSlider.length) {
 		autoplay: true,
 		autoplayTimeout: 8000,
 		autoplayHoverPause: false,
-		slideTransition: 'linear',
+		slideTransition: 'ease',
 		responsive: {
 			0: {
 				items: 1
@@ -432,24 +439,28 @@ if (reviewsSlider.length) {
 		stagePadding: 0,
 		center: false,
 		startPosition: 0,
-		loop: false,
 		smartSpeed: 300,
 		autoplay: false,
-		slideTransition: 'linear',
+		slideTransition: 'ease',
 		responsive: {
 			0: {
+				loop: false,
 				items: 1
 			},
 			576: {
+				loop: true,
 				items: 2
 			},
 			768: {
+				loop: false,
 				items: 2
 			},
 			993: {
+				loop: false,
 				items: 2
 			},
 			1200: {
+				loop: false,
 				items: 3
 			},
 		}
@@ -520,6 +531,91 @@ function generateURL(id) {
 	var query = '?rel=0&showinfo=0&autoplay=1';
 
 	return 'https://www.youtube.com/embed/' + id + query;
+}
+//=================================================================================================
+
+// TESTIMONIALS TABS ==============================================================================
+var testimonialsNavBtn = $('.testimonials-nav__btn');
+
+testimonialsNavBtn.on('click', function () {
+	if (!$(this).hasClass('active')) {
+		var parent = $(this).parents('.testimonials');
+		var currentID = $(this).attr('data-testimonials-id');
+
+		testimonialsContentShowmore_reset();
+
+		testimonialsNavBtn.removeClass('active');
+		$(this).addClass('active');
+
+		if (currentID === 'all') {
+			parent.find('.testimonials-item').slideUp(300);
+
+			setTimeout(function () {
+				parent.find('.testimonials-item').slideDown(300);
+			}, 350);
+		} else {
+			parent.find('.testimonials-item').slideUp(300);
+
+			setTimeout(function () {
+				parent.find('.testimonials-item[data-testimonials-id="' + currentID + '"]').slideDown(300);
+			}, 350);
+		}
+	}
+});
+
+// проверяем какая кнопка имеет класс active и отображаем соответствующий контент
+function setActiveTestimonialsContentOnLoad() {
+	var currentID = $('.testimonials-nav__btn.active').attr('data-testimonials-id');
+
+	if(currentID == 'all') {
+		$('.testimonials-item').slideUp(0);
+		$('.testimonials-item').slideDown(0);
+	} else {
+		$('.testimonials-item').slideUp(0);
+		$('.testimonials-item[data-testimonials-id="' + currentID + '"]').slideDown(0);
+	}
+}
+//=================================================================================================
+
+// TESTIMONIALS COMMENTS SHOWMORE BTN =============================================================
+function testimonialsContentShowmore() {
+	var testimonialsItemContentInner = $('.testimonials-item__content-inner');
+	var testimonialsItemContentInner_height = testimonialsItemContentInner.outerHeight();
+	var testimonialsItemContentInner_contentHeight = testimonialsItemContentInner.height();
+	var testimonialsItemContentInner_paddings = (testimonialsItemContentInner_height - testimonialsItemContentInner_contentHeight);
+	var testimonialsItemShowmoreBtn = $('.testimonials-item__comment-showmore-btn');
+
+	testimonialsItemContentInner.each(function () {
+		var currentCommentHeight = $(this).find('.testimonials-item__comment').outerHeight();
+
+		if (testimonialsItemContentInner_contentHeight < currentCommentHeight) {
+			$(this).addClass('showmore');
+		} else {
+			$(this).removeClass('showmore');
+		}
+	});
+
+	testimonialsItemShowmoreBtn.off('click');
+	testimonialsItemShowmoreBtn.on('click', function () {
+		var currentWrapper = $(this).parents('.showmore');
+		var currentCommentHeight = currentWrapper.find('.testimonials-item__comment').outerHeight();
+	
+		$(this).toggleClass('active');
+	
+		if ($(this).hasClass('active')) {
+			currentWrapper.css('height', currentCommentHeight + 50 + testimonialsItemContentInner_paddings + 'px');	// 50 высота блока с кнопкой .testimonials-item__comment-showmore
+			$(this).text('Hide');
+		} else {
+			currentWrapper.css('height', testimonialsItemContentInner_height + 'px');
+			$(this).text('Show completely');
+		}
+	});
+}
+
+// закрываем все showmore (длинные) комментарии
+function testimonialsContentShowmore_reset() {
+	$('.testimonials-item__content-inner').removeAttr('style');
+	$('.testimonials-item__comment-showmore-btn').removeClass('active').text('Show completely');
 }
 //=================================================================================================
 

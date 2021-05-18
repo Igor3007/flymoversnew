@@ -292,6 +292,7 @@ firstblock
     max-width: 70px;
 }
 
+
 .user-review__avatar img {
     border-radius: 50%;
     width: 100%;
@@ -312,6 +313,30 @@ firstblock
 
 .user-review__fromto>div {
     display: flex;
+}
+
+
+@media screen and (max-width: 480px) {
+    .user-review__avatar {
+        padding: 4px;
+        max-width: 55px;
+        min-width: 55px;
+    }
+
+    .user-review__name {
+        font-size: 14px;
+        line-height: 17px;
+    }
+
+    .user-review__fromto span,
+    .user-review__fromto>div {
+        font-size: 12px;
+        line-height: 16px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        margin-left: 5px;
+    }
 }
 
 .review-slider-item__rate {
@@ -383,20 +408,7 @@ section.ready-moved {
 
 }
 
-@media screen and (max-width: 990px) {
-    .ready-moved {
-        display: flex;
-        align-items: center;
-    }
 
-    .ready-moved__text {
-        padding: 30px;
-    }
-
-    .ready-moved__btn {
-        padding-bottom: 30px;
-    }
-}
 
 .ready-moved__text {
     flex-grow: 1;
@@ -407,6 +419,7 @@ section.ready-moved {
     line-height: 48px;
     color: #0091FF;
     text-align: center;
+    padding: 30px 0;
 }
 
 .ready-moved__text span {
@@ -418,10 +431,35 @@ section.ready-moved {
     max-width: 404px;
 }
 
+.ready-moved__image img {
+    width: 100%;
+    max-width: 100%;
+}
+
+@media screen and (max-width: 990px) {
+    .ready-moved {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .ready-moved__text {
+        padding: 30px;
+        font-size: 25px;
+        line-height: 140%;
+    }
+
+    .ready-moved__btn {
+        padding-bottom: 30px;
+    }
+}
+
 .homedesc {
     padding-top: 65px;
     padding-bottom: 45px;
 }
+
+
 
 /* --faq */
 
@@ -490,15 +528,13 @@ section.ready-moved {
     box-sizing: border-box;
 }
 
+
+
 .faq__col {
     width: calc(50% - 15px);
 }
 
-@media screen and (max-width: 990px) {
-    .faq__col {
-        width: 100%;
-    }
-}
+
 
 .faq-item.open {
     box-shadow: 0px 22px 44px -12px rgba(140, 145, 151, 0.2);
@@ -564,6 +600,25 @@ section.ready-moved {
 
 .faq-item__arrow svg {
     transition: 0.3s ease;
+}
+
+
+@media screen and (max-width: 990px) {
+    .faq__col {
+        width: 100%;
+    }
+
+    .faq-item__title {
+        font-size: 16px;
+    }
+
+    .faq-item__wrp {
+        font-size: 14px;
+    }
+
+    .faq-item {
+        margin-bottom: 15px;
+    }
 }
 
 /* --faq end */
@@ -695,5 +750,11 @@ section.ready-moved {
     .firstblock-main__form,
     .firstblock-main__slider {
         padding: 10px 20px 20px 20px;
+    }
+
+    .whyus-nav__btn {
+        padding: 10px 15px 10px 10px;
+        width: 100%;
+        font-size: 14px;
     }
 }
